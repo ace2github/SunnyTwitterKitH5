@@ -2,6 +2,9 @@ Pod::Spec.new do |s|
   s.name = "SunnyTwitterKitH5"
   s.version = "6.0.0"
   s.summary = "Increase user engagement and app growth."
+  s.homepage = "https://github.com/ace2github/SunnyTwitterKitH5"
+  s.documentation_url = "https://github.com/ace2github/SunnyTwitterKitH5"
+  s.social_media_url = "https://github.com/ace2github/SunnyTwitterKitH5"
   s.authors = "hui"
   s.platform = :ios, "9.0"
   s.source = { :git => "https://github.com/ace2github/SunnyTwitterKitH5/iOS", :tag => "#{s.version}"}
