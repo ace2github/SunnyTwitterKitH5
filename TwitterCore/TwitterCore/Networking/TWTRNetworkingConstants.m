@@ -25,5 +25,6 @@ NSString *const TWTRNetworkingStatusCodeKey = @"TWTRNetworkingStatusCode";
 NSString *const TWTRContentTypeHeaderField = @"Content-Type";
 NSString *const TWTRContentLengthHeaderField = @"Content-Length";
 NSString *const TWTRContentTypeURLEncoded = @"application/x-www-form-urlencoded;charset=UTF-8";
+NSString *const TWTRContentTypeURLEncodedJSON = @"application/json";
 NSString *const TWTRAcceptEncodingHeaderField = @"Accept-Encoding";
 NSString *const TWTRAcceptEncodingGzip = @"gzip";

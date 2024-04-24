@@ -44,6 +44,26 @@ class HomeViewController: DemoCollectionViewController {
     // MARK: - Actions
 
     @objc func didTapProfile() {
-        delegate?.homeViewControllerDidTapProfileButton(viewController: self)
+        TWTRTwitter.sharedInstance().logIn(with: self) { session, error in
+            if error == nil {
+                self.shareContentToTwitter(image: UIImage(named: "circle-user-tick-7")!, viewcontroller: self)
+            }
+        }
+        //delegate?.homeViewControllerDidTapProfileButton(viewController: self)
+    }
+    
+    func shareContentToTwitter(image:UIImage, viewcontroller:UIViewController) {
+        let composer = TWTRComposer()
+        composer.setText("women doushi hao haizi")
+        composer.setImage(image)
+        
+        composer.show(from: viewcontroller) {
+            [weak self] (result) in
+            guard let self = self else {
+                return
+            }
+            
+            print("twitter result:\(result)")
+        }
     }
 }

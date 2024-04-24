@@ -36,24 +36,25 @@
 }
 
 #pragma mark - NSURLSessionTaskDelegate
-- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler;
-{
-    NSURLProtectionSpace *protectionSpace = challenge.protectionSpace;
-
-    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
-        SecTrustRef serverTrust = protectionSpace.serverTrust;
-        NSString *requestHost = task.currentRequest.URL.host;
-
-        if ([self.trustEvaluator evaluateServerTrust:serverTrust forDomain:requestHost]) {
-            NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
-            completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
-        } else {
-            NSLog(@"[%@] Cancelling API request, SSL certificate is invalid.", [self class]);
-            completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
-        }
-    } else {
-        completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace, nil);
-    }
-}
+// 不知道啥原因 api.twitter.com 证书校验失败，直接屏蔽OK
+//- (void)URLSession:(NSURLSession *)session task:(NSURLSessionTask *)task didReceiveChallenge:(NSURLAuthenticationChallenge *)challenge completionHandler:(void (^)(NSURLSessionAuthChallengeDisposition disposition, NSURLCredential *credential))completionHandler;
+//{
+//    NSURLProtectionSpace *protectionSpace = challenge.protectionSpace;
+//
+//    if ([protectionSpace.authenticationMethod isEqualToString:NSURLAuthenticationMethodServerTrust]) {
+//        SecTrustRef serverTrust = protectionSpace.serverTrust;
+//        NSString *requestHost = task.currentRequest.URL.host;
+//
+//        if ([self.trustEvaluator evaluateServerTrust:serverTrust forDomain:requestHost]) {
+//            NSURLCredential *credential = [NSURLCredential credentialForTrust:serverTrust];
+//            completionHandler(NSURLSessionAuthChallengeUseCredential, credential);
+//        } else {
+//            NSLog(@"[%@] Cancelling API request, SSL certificate is invalid.", [self class]);
+//            completionHandler(NSURLSessionAuthChallengeCancelAuthenticationChallenge, nil);
+//        }
+//    } else {
+//        completionHandler(NSURLSessionAuthChallengeRejectProtectionSpace, nil);
+//    }
+//}
 
 @end

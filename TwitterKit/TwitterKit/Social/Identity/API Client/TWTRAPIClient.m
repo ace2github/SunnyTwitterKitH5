@@ -52,6 +52,7 @@
 
 NSString *const TWTRTweetsNotLoadedKey = @"TweetsNotLoaded";
 static NSString *const TWTRAPIConstantsCreateTweetPath = @"/1.1/statuses/update.json";
+static NSString *const TWTRAPIConstantsCreateTweetPath_v2 = @"/2/tweets";
 static NSString *const TWTRAPIConstantsLikeTweetPath = @"/1.1/favorites/create.json";
 static NSString *const TWTRAPIConstantsUnlikeTweetPath = @"/1.1/favorites/destroy.json";
 static NSString *const TWTRAPIConstantsRetweetPath = @"/1.1/statuses/retweet/%@.json";
@@ -159,13 +160,13 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
     TWTRParameterAssertOrReturn(tweetText);
     TWTRParameterAssertOrReturn(completion);
 
-    [self postToAPIPath:TWTRAPIConstantsCreateTweetPath
-             parameters:@{@"status": tweetText}
+    [self postToAPIPath_v2:TWTRAPIConstantsCreateTweetPath_v2
+                     parameters:@{@"text": tweetText}
              completion:^(NSURLResponse *response, NSDictionary *responseDict, NSError *error) {
                  TWTRTweet *tweet = nil;
 
                  if (!error) {
-                     tweet = [[TWTRTweet alloc] initWithJSONDictionary:responseDict];
+                     tweet = [[TWTRTweet alloc] initWithJSONDictionary_v2:responseDict];
                  }
 
                  [self callGenericResponseBlock:completion withObject:tweet error:error];
@@ -196,14 +197,14 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
     TWTRParameterAssertOrReturn(mediaID);
     TWTRParameterAssertOrReturn(completion);
 
-    NSDictionary *parameters = @{@"status": tweetText, @"media_ids": mediaID};
-    [self postToAPIPath:TWTRAPIConstantsCreateTweetPath
+    NSDictionary *parameters = @{@"text": tweetText, @"media": @{@"media_ids": @[mediaID]}};
+    [self postToAPIPath_v2:TWTRAPIConstantsCreateTweetPath_v2
              parameters:parameters
              completion:^(NSURLResponse *response, NSDictionary *responseDict, NSError *error) {
 
                  TWTRTweet *tweet = nil;
                  if (!error) {
-                     tweet = [[TWTRTweet alloc] initWithJSONDictionary:responseDict];
+                     tweet = [[TWTRTweet alloc] initWithJSONDictionary_v2:responseDict];
                  }
                  [self callGenericResponseBlock:completion withObject:tweet error:error];
              }];
@@ -850,4 +851,55 @@ static id<TWTRSessionStore_Private> TWTRSharedSessionStore = nil;
                         }];
 }
 
+
+#pragma mark - v2
+- (void)postToAPIPath_v2:(nonnull NSString *)apiPath parameters:(NSDictionary *)parameters completion:(TWTRJSONRequestCompletion)completion
+{
+    [self performHTTPMethod_v2:@"POST" onURL:[self apiURLWithPath:apiPath] expectedType:[NSDictionary class] parameters:parameters completion:completion];
+}
+
+- (void)performHTTPMethod_v2:(nonnull NSString *)method onURL:(NSURL *)url expectedType:(Class)expectedClass parameters:(NSDictionary *)parameters completion:(TWTRJSONRequestCompletion)completion
+{
+    TWTRCheckArgumentWithCompletion(url, completion);
+
+    NSError *requestError = nil;
+
+    NSMutableURLRequest *request = [[self URLRequestWithMethod:@"POST" URLString:[url absoluteString] parameters:nil error:&requestError] mutableCopy];
+    [request setValue:TWTRContentTypeURLEncodedJSON forHTTPHeaderField:TWTRContentTypeHeaderField];
+    
+    if ([method isEqualToString:@"POST"]) {
+        NSData *data = [NSJSONSerialization dataWithJSONObject:parameters options:0 error:nil];
+        NSString *length = [NSString stringWithFormat:@"%lu", (unsigned long)[data length]];
+        [request setHTTPBody:data];
+        [request setValue:length forHTTPHeaderField:TWTRContentLengthHeaderField];
+    }
+
+    if (!request) {
+        completion(nil, nil, requestError);
+        return;
+    }
+    
+    [self sendTwitterRequest:request
+                       queue:dispatch_get_global_queue(DISPATCH_QUEUE_PRIORITY_DEFAULT, 0)
+                  completion:^(NSURLResponse *response, NSData *data, NSError *connectionError) {
+                      id responseObject = nil;
+                      NSError *errorToReturn = nil;
+
+                      if (data.length > 0) {
+                          NSError *jsonParsingError;
+                          responseObject = [NSJSONSerialization JSONObjectWithData:data options:NSJSONReadingAllowFragments error:&jsonParsingError];
+
+                          if (responseObject == nil) {
+                              errorToReturn = jsonParsingError;
+                          } else if (![responseObject isKindOfClass:expectedClass]) {
+                              NSString *errorString = [NSString stringWithFormat:@"Invalid type encountered when loading API path: %@. Expected %@ got %@", url.absoluteString, NSStringFromClass(expectedClass), NSStringFromClass([responseObject class])];
+                              errorToReturn = [NSError errorWithDomain:TWTRErrorDomain code:TWTRErrorCodeMismatchedJSONType userInfo:@{NSLocalizedDescriptionKey: errorString}];
+                              responseObject = nil;
+                          }
+                      } else {
+                          errorToReturn = connectionError;
+                      }
+                      completion(response, responseObject, errorToReturn);
+                  }];
+}
 @end

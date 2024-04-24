@@ -1,0 +1,12 @@
+//
+//  Config.xcconfig
+//  DemoApp
+//
+//  Copyright © 2017 Twitter. All rights reserved.
+//
+
+TWITTER_CONSUMER_KEY = 96XnocqdlVEurmZhqwdblQQbe
+TWITTER_CONSUMER_SECRET = dcbvEI6Hexvnk4ZxrVKPpl6GkqKrZVnefXuQWnbYw6mXAt9Ggx
+//TWITTER_CONSUMER_KEY = 42jVDkOjs7vAlN6CzEKAsj2RS
+//TWITTER_CONSUMER_SECRET = LHJglnNVQASO3qc8LFbxPmlwa68UuhX40KuAmU6DQSpfhNiPZl
+MOPUB_AD_UNIT_ID = EDIT_THIS

@@ -29,6 +29,7 @@ FOUNDATION_EXTERN NSString *const TWTRNetworkingStatusCodeKey;
 FOUNDATION_EXTERN NSString *const TWTRContentTypeHeaderField;
 FOUNDATION_EXTERN NSString *const TWTRContentLengthHeaderField;
 FOUNDATION_EXTERN NSString *const TWTRContentTypeURLEncoded;
+FOUNDATION_EXTERN NSString *const TWTRContentTypeURLEncodedJSON;
 FOUNDATION_EXTERN NSString *const TWTRAcceptEncodingHeaderField;
 FOUNDATION_EXTERN NSString *const TWTRAcceptEncodingGzip;
 

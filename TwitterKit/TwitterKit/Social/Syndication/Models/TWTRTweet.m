@@ -49,6 +49,22 @@ NSString *const TWTRTweetPerspectivalUserID = @"perspectival_user_id";
 @synthesize permalink = _permalink;
 
 #pragma mark - Init
+- (instancetype)initWithJSONDictionary_v2:(NSDictionary *)dictionary {
+    id data = [dictionary objectForKey:@"data"];
+    if ([data isKindOfClass:[NSDictionary class]]) {
+        if (self = [super init]) {
+            _tweetID = [[data objectForKey:@"id"] stringValue];
+            _text = [[data objectForKey:@"text"] stringValue];
+            if (_text==nil && [_text length] == 0 && _tweetID==nil && [_tweetID length]==0) {
+                return nil;
+            }
+
+            return self;
+        }
+    }
+
+    return nil;
+}
 
 - (instancetype)initWithJSONDictionary:(NSDictionary *)dictionary
 {
