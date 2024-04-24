@@ -1,3 +1,9 @@
+## 修改源码和重新啊编译
+1、原TwitterKit工程，需要将DemoApp/Config.xcconfig.example 重新开启（即后缀.example去掉）
+2、原TwitterKit工程，id报错，已经修改
+3、编译成framework，运行根目录下./build_framework.sh 脚本
+  如果报错，一般为文件夹没有权限，修改下文件权限
+
 **How to use the customized TwitterKit pod**
 ```
 pod 'TwitterKit5'
@@ -128,3 +134,5 @@ Follow [@TwitterDev](http://twitter.com/twitterdev) on Twitter for updates.
 
 Copyright 2017 Twitter, Inc.
 Licensed under the Apache License, Version 2.0: http://www.apache.org/licenses/LICENSE-2.0
+
+
